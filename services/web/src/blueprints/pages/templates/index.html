@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hello World!</h1>
+
+<p>Socket Demo .................... <a href="{{ url_for('page.socket') }}">link</a></p>
+<p>Task Demo .................... <a href="{{ url_for('page.add_task', n='helloworld') }}">link</a></p>
+<p>Task Message Endpoint .................... <a href="{{ url_for('api.testRoute') }}">link</a></p>
+{% endblock %}

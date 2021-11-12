@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    // DEFINE SOCKET
+    var socket
+    
+    // WHEN DOCUMENT IS READY
+    $(document).ready(function(){
+        // CONNECT TO SOCKET
+        socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        // HANDLE SENDING MESSAGE
+        socket.on('connect', function(){
+            // SEND INITIAL CONNECTION MESSAGE
+            socket.send("Client Connected!");
+        });
+
+        // HANDLE MESSAGE UPDATES
+        socket.on('message', function(msg){
+            $('#chat').val($('#chat').val() + msg + '\n');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight);
+        });
+
+        // HANDLE MESSAGE UPDATES (API)
+        socket.on('messageAPI', function(msg){
+            $('#chat').val($('#chat').val() + msg + '\n');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight);
+        });
+
+        // HANDLE ENTER KEYPRESS
+        $('#text').keypress(function(e) {
+            var code = e.keyCode || e.which;
+            if (code == 13) {                                
+                socket.send($('#text').val());
+                $('#text').val('');
+            }
+        });
+    });
+
+    // HANDLE CLOSING SOCKET
+    function leave_room() {
+        socket.emit('left', {}, function() {
+            // DISCONNECT FROM SOCKET
+            socket.disconnect();
+
+            // REDIRECT BACK TO HOMEPAGE
+            window.location.href = "{{ url_for('page.index') }}";
+        });
+    }
+</script>
+{% endblock %}
+
+
+{% block content %}
+<h1>Socket Example</h1>
+
+<h3>Socket Messages</h3>
+<textarea id="chat" cols="80" rows="20"></textarea><br><br>
+<input id="text" size="80" placeholder="Enter your message here"><br><br>
+<a href="#" onclick="leave_room();">Leave this room</a
+
+{% endblock %}

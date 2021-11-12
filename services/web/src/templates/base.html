@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- META TAGS -->
+        <meta charset="utf-8">
+
+        <!-- PAGE TITLE-->
+        <title>{{ config.get('APP_NAME') }}</title>
+
+        <!-- ADDITIONAL HEAD SETTINGS -->
+        {% block head %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- PAGE CONTENT-->
+        {% block content %}
+        {% endblock %}
+
+        <!-- SCRIPT BLOCK -->
+        {% block scripts %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,70 @@
+## DEFINE COMPOSE VERSION
+version: '2.6'
+
+## DEFINE SERVICES
+services:
+
+  ## DEFINE REDIS SERVICE
+  redis:
+    build:
+      context: ./services/redis
+      target: production
+    image: pkeech/demo-redis:dev
+    expose:
+      - 6379
+    volumes:
+      - director-data:/data
+
+  ## DEFINE TASKS SERVICE
+  worker:
+    build:
+      context: ./services/web
+      target: tasks      
+    image: pkeech/demo-tasks:dev
+    environment:
+      - REDIS_URL=redis://:Pa55w0rd@redis:6379
+    volumes:
+      - ./services/web/:/src
+    deploy:
+      replicas: 1
+    depends_on:
+      - redis
+
+  ## DEFINE WEB SERVICE
+  web:
+    build: 
+      context: ./services/web
+      target: development
+    container_name: web
+    image: pkeech/demo-web:dev
+    restart: always
+    volumes:
+      - ./services/web/:/src
+    environment:
+      - APP_NAME=Demo App
+    ports:
+      - 8081:8080
+    depends_on:
+      - redis
+      #- worker
+  
+  ## DEFINE RQ DASHBOARD SERVICE (DEVELOPMENT ONLY)
+  dashboard:
+    build:
+      context: ./services/dashboard
+      target: production
+    image: pkeech/demo-dashboard:dev
+    container_name: dashboard
+    ports:
+      - 9181:9181
+    #environment:
+      #- REDIS_URL=redis://:Pa55w0rd@redis:6379
+      #- RQ_DASHBOARD_USERNAME=rq
+      #- RQ_DASHBOARD_PASSWORD=password
+    depends_on:
+      - redis
+      
+## DEFINE PERSISTENT STORAGE
+volumes:
+  app-data:
+  director-data:
